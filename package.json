@@ -1,0 +1,55 @@
+{
+  "name": "@react5/i18n",
+  "version": "0.1.0",
+  "description": "Framework-free localization utilities: ICU message formatting, message resolution with fallbacks, a locale store, and a translation catalog validator.",
+  "keywords": [
+    "i18n",
+    "localization",
+    "icu",
+    "messageformat",
+    "translations"
+  ],
+  "homepage": "https://github.com/react5com/i18n#readme",
+  "bugs": {
+    "url": "https://github.com/react5com/i18n/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/react5com/i18n.git"
+  },
+  "license": "MIT",
+  "author": "react5.com",
+  "type": "module",
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/i18n.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/i18n.js"
+    }
+  },
+  "bin": {
+    "i18n-validate": "./bin/i18n-validate.mjs"
+  },
+  "scripts": {
+    "build": "tsc --noEmit && node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json && node scripts/fix-dts-extensions.mjs && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/validate.test.mjs && vitest run",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "dependencies": {
+    "@formatjs/icu-messageformat-parser": "^3.5.20",
+    "intl-messageformat": "^12.1.2"
+  },
+  "devDependencies": {
+    "typescript": "~7.0.2",
+    "vite": "^8.3.2",
+    "vitest": "^5.0.3"
+  }
+}
