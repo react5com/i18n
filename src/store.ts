@@ -1,4 +1,4 @@
-import { resolveMessages, type LocaleMessages } from './resolveMessages.ts'
+import { resolveMessages, type LocaleMessages, type ResolveMessagesOptions } from './resolveMessages.ts'
 import type { Locale } from './locale.ts'
 
 /** Anything that can report the current locale when asked — satisfied by `I18nStore`. */
@@ -19,8 +19,15 @@ export interface I18nStore extends LocaleSource {
   ): T
 }
 
-/** Holds the app's current locale and notifies subscribers when it changes. */
-export function createI18nStore(initialLocale: Locale = 'en'): I18nStore {
+/**
+ * Holds the app's current locale and notifies subscribers when it changes. `options` are applied
+ * to every `resolve` call (e.g. `{ warnOnMissing: import.meta.env.DEV }`); `fallback` sets the
+ * fallback language (default `'en'`).
+ */
+export function createI18nStore(
+  initialLocale: Locale = 'en',
+  { fallback, ...options }: ResolveMessagesOptions & { fallback?: string } = {},
+): I18nStore {
   let locale = initialLocale
   const listeners = new Set<LocaleListener>()
 
@@ -42,7 +49,7 @@ export function createI18nStore(initialLocale: Locale = 'en'): I18nStore {
     },
 
     resolve(dictionaries, overrides) {
-      return resolveMessages(locale, dictionaries, overrides)
+      return resolveMessages(locale, dictionaries, overrides, fallback, options)
     },
   }
 }

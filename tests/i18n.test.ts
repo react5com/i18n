@@ -47,7 +47,9 @@ describe('resolveMessages', () => {
   }
   it('falls back per message and ignores undefined overrides', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    expect(resolveMessages('fr-CA', dictionaries, { title: undefined })).toEqual({
+    expect(
+      resolveMessages('fr-CA', dictionaries, { title: undefined }, 'en', { warnOnMissing: true }),
+    ).toEqual({
       title: 'Titre',
       close: 'Close',
     })
@@ -70,6 +72,19 @@ describe('createI18nStore', () => {
     const dictionaries = { en: { close: 'Close' }, fr: { close: 'Fermer' } }
     expect(i18n.resolve(dictionaries).close).toBe('Fermer')
     expect(i18n.resolve(dictionaries, { close: 'X' }).close).toBe('X')
+  })
+  it('uses the configured fallback language', () => {
+    const i18n = createI18nStore('de', { fallback: 'fr' })
+    const dictionaries = { en: { close: 'Close' }, fr: { close: 'Fermer' } }
+    expect(i18n.resolve(dictionaries).close).toBe('Fermer')
+  })
+  it('warns once when the language has no dictionary', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const dictionaries = { en: { a: 'A', b: 'B' }, fr: { a: 'A', b: 'B' } }
+    resolveMessages('de', dictionaries, undefined, 'en', { warnOnMissing: true })
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(warn).toHaveBeenCalledWith('[i18n] Missing dictionary: de')
+    warn.mockRestore()
   })
   it('notifies subscribers on change only, until unsubscribed', () => {
     const i18n = createI18nStore('en')

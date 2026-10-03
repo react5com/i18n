@@ -37,11 +37,16 @@ formatMessage(messages.tasks, { count: 2 }, i18n.locale) // "2 tâches"
 languageOf('de-AT', ['en', 'fr']) // "en" (first entry is the default fallback)
 ```
 
-### `resolveMessages(locale, dictionaries, overrides?, fallback = 'en')`
+### `resolveMessages(locale, dictionaries, overrides?, fallback = 'en', options?)`
 
 `dictionaries` is keyed by language. A message missing from the selected language falls back to
-the `fallback` dictionary (which must exist and defines the full set of keys). In dev builds of
-the host app (`import.meta.env.DEV`) missing messages are logged with `console.warn`.
+the `fallback` dictionary (which must exist and defines the full set of keys). Pass
+`{ warnOnMissing: true }` as `options` to log missing messages with `console.warn`; the library
+never reads the bundler environment, so the host decides, e.g.
+`createI18nStore('en', { warnOnMissing: import.meta.env.DEV })` (the store applies its options to
+every `resolve` call). It also warns once when the locale's language has no dictionary at all. The
+store additionally accepts `fallback` in its options (`createI18nStore('de', { fallback: 'fr' })`)
+to change the fallback language.
 
 ### `formatMessage(template, values?, locale = 'en')`
 

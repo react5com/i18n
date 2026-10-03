@@ -11,8 +11,9 @@ no UI, no bundled translations, no knowledge of any particular app's locales.
 
 - `src/index.ts` — the public API; export everything public from here.
 - `src/locale.ts` — `Locale`, `languageOf(locale, supported, fallback?)`, `languageSubtag`.
-- `src/resolveMessages.ts` — per-message fallback and overrides; warns on missing messages when the
-  host runs in dev (`import.meta.env.DEV` is deliberately left unreplaced by the library build).
+- `src/resolveMessages.ts` — per-message fallback and overrides; warns on missing messages only when
+  the host passes `warnOnMissing` (never read `import.meta.env` in the library: Vite pre-bundles
+  dependencies without it and the module would throw at load).
 - `src/formatMessage.ts` — ICU formatting via `intl-messageformat`; throws on bad input.
 - `src/store.ts` — `createI18nStore`, `I18nStore`, `LocaleSource`, `LocaleListener`.
 - `src/format.ts` — `Intl` wrappers: `formatDate`, `formatDateTime`, `formatHours`, `compareText`, `formatLocale`.
