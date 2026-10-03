@@ -1,6 +1,6 @@
 {
   "name": "@react5/i18n",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Framework-free localization utilities: ICU message formatting, message resolution with fallbacks, a locale store, and a translation catalog validator.",
   "keywords": [
     "i18n",

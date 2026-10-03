@@ -8,6 +8,8 @@ libraries.
 - **`createI18nStore`** — current locale plus change subscriptions.
 - **`languageOf`** — map a BCP 47 tag (`fr-CA`, `fr_CA`) to one of your supported languages.
 - **`firstDayOfWeek`** — locale-aware first day of the week.
+- **`negotiateLocale`**, **`isValidTimeZone`**, **`isValidLocaleTag`** — pick a supported language from `navigator.languages`; validate stored preferences.
+- **`formatDate`**, **`formatDateTime`**, **`formatHours`**, **`compareText`**, **`formatLocale`** — locale-aware `Intl` wrappers (date-only `YYYY-MM-DD` strings are never shifted by the time zone; invalid dates format as an empty string).
 - **`i18n-validate`** — CLI that checks translation JSON files against the English catalog.
 
 ## Install
