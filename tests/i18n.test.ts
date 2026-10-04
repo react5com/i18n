@@ -57,6 +57,30 @@ describe('resolveMessages', () => {
     expect(resolveMessages('fr', dictionaries, { close: 'Fermer' }).close).toBe('Fermer')
     warn.mockRestore()
   })
+  it('rejects overrides for unknown keys at compile time unless opted in', () => {
+    // @ts-expect-error `clse` is a typo of `close`
+    resolveMessages('fr', dictionaries, { clse: 'x' })
+  })
+  it('keeps overrides for keys the dictionaries do not define', () => {
+    type Extra = { navigator?: string; gone?: string }
+    const result = resolveMessages<(typeof dictionaries)['en'], Extra>('fr', dictionaries, {
+      navigator: 'Navigator',
+      gone: undefined,
+    })
+    expect(result).toEqual({ title: 'Titre', close: 'Close', navigator: 'Navigator' })
+  })
+  it('keeps overrides named like Object.prototype members and ignores __proto__', () => {
+    const extra = JSON.parse('{"constructor":"C","toString":"T","__proto__":{"polluted":1}}')
+    const result = resolveMessages<(typeof dictionaries)['en'], Record<string, unknown>>(
+      'fr',
+      dictionaries,
+      extra,
+    )
+    expect(result.constructor).toBe('C')
+    expect(result.toString).toBe('T')
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype)
+    expect(result.polluted).toBeUndefined()
+  })
   it('uses the fallback dictionary for unknown locales and honours a custom fallback', () => {
     expect(resolveMessages('xx', dictionaries).title).toBe('Title')
     expect(resolveMessages(undefined, dictionaries, undefined, 'fr').title).toBe('Titre')

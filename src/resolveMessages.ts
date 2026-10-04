@@ -13,14 +13,18 @@ export interface ResolveMessagesOptions {
  * per message to the `fallback` language (default `'en'`) and applying `overrides` last.
  * Pass `{ warnOnMissing: true }` (e.g. `import.meta.env.DEV` in the host app) to log missing
  * messages.
+ *
+ * Overrides are checked against the dictionary keys, so a typo is a type error. To pass through
+ * extra keys the dictionaries do not define (e.g. the caller's own messages), name them
+ * explicitly: `resolveMessages<Dict, Extra>(…)`. They are kept as-is and typed `T & O`.
  */
-export function resolveMessages<T extends LocaleMessages>(
+export function resolveMessages<T extends LocaleMessages, O extends object = object>(
   locale: Locale | undefined,
   dictionaries: Record<string, T>,
-  overrides?: Partial<T>,
+  overrides?: Partial<T> & NoInfer<O>,
   fallback = 'en',
   options: ResolveMessagesOptions = {},
-): T {
+): T & O {
   const base = dictionaries[fallback]
   if (!base) throw new Error(`[i18n] Missing fallback dictionary: ${fallback}`)
   const language = locale && languageSubtag(locale)
@@ -36,5 +40,9 @@ export function resolveMessages<T extends LocaleMessages>(
     const override = overrides?.[key]
     if (override !== undefined && override !== null) result[key] = override as T[keyof T]
   }
-  return result
+  for (const [key, value] of Object.entries(overrides ?? {})) {
+    if (key === '__proto__' || Object.hasOwn(base, key) || value === undefined || value === null) continue
+    Object.defineProperty(result, key, { value, enumerable: true, writable: true, configurable: true })
+  }
+  return result as T & O
 }

@@ -40,7 +40,8 @@ languageOf('de-AT', ['en', 'fr']) // "en" (first entry is the default fallback)
 ### `resolveMessages(locale, dictionaries, overrides?, fallback = 'en', options?)`
 
 `dictionaries` is keyed by language. A message missing from the selected language falls back to
-the `fallback` dictionary (which must exist and defines the full set of keys). Pass
+the `fallback` dictionary (which must exist and defines the full set of keys). `overrides` for
+keys the dictionaries don't define are passed through to the result. Pass
 `{ warnOnMissing: true }` as `options` to log missing messages with `console.warn`; the library
 never reads the bundler environment, so the host decides, e.g.
 `createI18nStore('en', { warnOnMissing: import.meta.env.DEV })` (the store applies its options to
